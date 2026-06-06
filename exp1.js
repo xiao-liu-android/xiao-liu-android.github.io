@@ -10,7 +10,6 @@ b('ORIGIN',location.origin);
 b('H5I',typeof H5Interface);
 b('ACCT',typeof AccountInfo);
 b('AWC',typeof AppWebClient);
-b('BRIDGE_KEYS', Object.keys(window).filter(k=>k.includes('Interface')||k.includes('Account')||k.includes('Client')).join(','));
 
 var bridge = window.H5Interface || window.AccountInfo;
 if(bridge){
