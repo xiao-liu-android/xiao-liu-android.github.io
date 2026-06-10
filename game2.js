@@ -54,8 +54,7 @@ return out;
 }
 function getModule(name) {
 try {
-if (typeof weex !== "undefined" && weex.requireModule) return
-weex.requireModule(name);
+if (typeof weex !== "undefined" && weex.requireModule) return weex.requireModule(name);
 } catch (e) {}
 return null;
 }
